@@ -1,0 +1,22 @@
+module test_top (
+    input key_n,         // Key for advancing through LUT
+    input i_rst_n,       // Active-low reset
+    input i_clk,         // Clock input
+
+    output [7:0] data,  // Data output (stored data from SPI)
+    output led           // Indicates when LUT operation is finished
+);
+    wire [8:0]r_data;
+
+    // Instantiate ST7735s_Registers (LUT) module
+    ST7735s_Registers LUT (
+        .clk(i_clk), 
+        .resend(~i_rst_n), 
+        .advance(~key_n),  // Advance when SPI is ready
+        .command(r_data),      // Data to be sent from LUT
+        .finished()    // Finished signal from LUT
+    );
+
+    assign data = r_data[7:0];
+    assign led = r_data[8];
+endmodule
